@@ -5,7 +5,7 @@ import { Text, View } from '../../components/Themed';
 
 export default function TabOneScreen() {
   return (
-    <View className="flex-1 items-center justify-center bg-red-500">
+    <View className="flex-1 items-center justify-center bg-red-500 dark:bg-red-800">
       <Text style={styles.title}>Hello Dan</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="app/(tabs)/index.tsx" />
