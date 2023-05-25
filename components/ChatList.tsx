@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import { FlashList } from "@shopify/flash-list";
 
 type Message = {
     username: string
@@ -47,30 +48,36 @@ const useChatLog = () => {
     ]
 }
 
-const UserText = () => (
-    <Text className="font-bold text-black dark:text-pink-500">Boek</Text>
+const UserText = ({ name }: { name: string }) => (
+    <Text className="font-bold text-pink-500 dark:text-pink-500">{name}</Text>
 )
 
 const MessageSeparator = () => (
     <Text className="text-black dark:text-white">: </Text>
 )
 
-const MessageText = () => (
-    <Text className="text-black dark:text-white"></Text>
+const MessageText = ({ message }: { message: string }) => (
+    <Text className="text-black dark:text-white">{message}</Text>
 )
 
-const ChatListItem = () => (
-    <Text>
-        <UserText />
+const ChatListItem = ({ item }: { item: Message }) => (
+    <Text className="p-1">
+        <UserText name={item.username} />
         <MessageSeparator />
-        <MessageText />
+        <MessageText message={item.message} />
     </Text>
 )
 
 export default function ChatList() {
+    const messages = useChatLog()
     return (
-        <View className="p-2">
-            <ChatListItem />
+        <View className="flex-1 p-2">
+            <FlashList
+                renderItem={({ item }: { item : Message }) => {
+                    return <ChatListItem item={item} />
+                }}
+                estimatedItemSize={50}
+                data={messages}/>
         </View>
         )
 }
