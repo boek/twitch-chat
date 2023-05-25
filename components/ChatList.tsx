@@ -1,13 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 
+const tmi = require('tmi.js');
+
+const client = new tmi.Client({
+	channels: [ 'notonlydans' ]
+});
+
 type Message = {
+    color: string
     username: string
     message: string
 }
 
 const useChatLog = () => {
+    const [messages, setMessages] = useState<Message[]>([]);
+
+    useEffect(() => {
+        console.log("useEffect");
+        client.on('message', (channel, tags, message, self) => {
+            console.log("tags", tags);
+            setMessages(messages => [...messages, { color: tags['color'], username: String(tags['display-name']), message: message }]);
+        });
+        
+        client.connect();
+
+        return () => {
+            client.disconnect();
+        }
+    }, [])
+
+    return messages
+
     return [
         {
             username: "itsboek",
@@ -48,8 +73,8 @@ const useChatLog = () => {
     ]
 }
 
-const UserText = ({ name }: { name: string }) => (
-    <Text className="font-bold text-pink-500 dark:text-pink-500">{name}</Text>
+const UserText = ({ name, color }: { name: string, color: string }) => (
+    <Text className="font-bold" style={{ color : color ? color : "purple"}}>{name}</Text>
 )
 
 const MessageSeparator = () => (
@@ -62,7 +87,7 @@ const MessageText = ({ message }: { message: string }) => (
 
 const ChatListItem = ({ item }: { item: Message }) => (
     <Text className="p-1">
-        <UserText name={item.username} />
+        <UserText name={item.username} color={item.color} />
         <MessageSeparator />
         <MessageText message={item.message} />
     </Text>
@@ -70,6 +95,7 @@ const ChatListItem = ({ item }: { item: Message }) => (
 
 export default function ChatList() {
     const messages = useChatLog()
+    console.log("boek", messages);
     return (
         <View className="flex-1 p-2">
             <FlashList
